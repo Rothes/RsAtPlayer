@@ -24,7 +24,7 @@ class RsAtPlayer : RsLibPlugin() {
 
         PacketListenerManager.register()
         Bukkit.getPluginManager().registerEvents(Listeners(), this)
-        Updater(this, 17924, "/Rothes/RsAtPlayer/master/Version%20Info.json").start()
+        Updater(this, 17924, "/Rothes/RsAtPlayer/master/Version_Info.json").start()
     }
 
     override fun onDisable() {
