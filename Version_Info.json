@@ -1,0 +1,23 @@
+{
+  "Version_Channels": {
+    "Stable": {
+      "Latest_Version_Number": 1,
+      "Log_Level": "Info",
+      "Actions": [],
+      "Message": {
+        "en-US": "&bA new version of RsAtPlayer is available!"
+      }
+    }
+  },
+  "Version_Actions": {
+    "0-999": {
+      "Log_Level": "Info",
+      "Actions": [],
+      "Message_Times": 1,
+      "Notify_In_Game": false,
+      "Message": {
+        "en-US": "&c插件目前处于早期预览测试阶段! 有任何问题欢迎加入我们的 QQ群: 422532220 !"
+      }
+    }
+  }
+}
