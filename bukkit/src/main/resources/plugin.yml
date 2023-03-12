@@ -1,0 +1,11 @@
+name: RsAtPlayer
+main: io.github.rothes.atplayer.bukkit.RsAtPlayer
+author: Rothes
+authors: [Rothes]
+version: ${versionString}
+version-channel: ${versionChannel}
+version-number: ${versionNumber}
+api-version: 1.19
+depend:
+  - ProtocolLib
+  - ViaVersion

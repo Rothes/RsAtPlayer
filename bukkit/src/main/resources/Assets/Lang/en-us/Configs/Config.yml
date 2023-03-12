@@ -1,0 +1,173 @@
+At-Types:
+  # Built-in type. Never remove it.
+  # This is triggered when a player's full name is sent.
+  Mention:
+    # Is this type enabled?
+    Enabled: false
+    # The notify-groups. We will search for a matched group from head to end.
+    Notify-Groups:
+      - Mention
+  # Built-in type. Never remove it.
+  # This is triggered when @ with a player's full name is sent.
+  Ping:
+    Enabled: true
+    # If the sender/receiver doesn't have the permission defined in `Ping` group,
+    # we use `At-Fallback` as fallback.
+    Notify-Groups:
+      - Ping
+      - At-Fallback
+    Recommend-Group: Ping
+  # You can add your custom at types here.
+  Custom:
+    - # Matched format list.
+      Formats:
+        - '@all'
+      Notify-Groups:
+        - All
+        - At-Fallback
+      Recommend-Group: Custom-All # This group add suggestion to tab-complete.
+    - # Matched format list.
+      Formats:
+        - '@All'
+        - '@everyone'
+        - '@here'
+      Notify-Groups:
+        - All
+        - At-Fallback
+      Recommend-Group: Custom-All-Not-Add # This group doesn't add, to avoid the messes.
+
+Recommend-Groups:
+  Ping:
+    # Add a `@+Player name` recommend to tab-complete for each player.
+    Add-Recommends-In-Chat: true
+    # On versions before 1.19.1 (not included), we need to create a fake player in tab list
+    # to add recommend in chat tab-complete. Set this to true if you'd like to see them.
+    Add-Recommends-Legacy: false
+    # The display name of the fake player in tab list, which is shown when the client/server version is 1.13-1.19 .
+    # Message type accepted. PlaceholderAPI supported here, and the target is the shown player (not the viewer).
+    # Also placeholder "<$Name>" as the format name.
+    Fake-Player-Tab-Name: '~RsAtPlayer Fake %player_displayname%'
+  Custom-All:
+    Add-Recommends-In-Chat: true
+    Add-Recommends-Legacy: false
+    # PlaceholderAPI not supported for custom formats.
+    Fake-Player-Tab-Name: '~RsAtPlayer Format <$Name>'
+  Custom-All-Not-Add:
+    Add-Recommends-In-Chat: false
+    Add-Recommends-Legacy: false
+    Fake-Player-Tab-Name: '~RsAtPlayer Format <$Name>'
+
+
+Notify-Groups:
+  All:
+    Sender:
+      # If we allow unknown (player not detected) sender.
+      Allow-Unknown: true
+      # What format this message should be replaced to. Supports advanced component.
+      Replacement: '&b<$Message>'
+      # The permission required.
+      Permission: 'RsAtPlayer.At.All.Send'
+      # The sound to play for the player.
+      Sound:
+        # Advanced options.
+        # Type accepts any Bukkit Sound enum.
+        Type: ENTITY_PLAYER_LEVELUP
+        # The sound source.
+        # List: MASTER, MUSIC, RECORD, WEATHER, BLOCK, HOSTILE, NEUTRAL, PLAYER, AMBIENT, VOICE.
+        Source: MASTER
+        Volume: 1.0
+        Pitch: 1.0
+      Chat: '&6You just pinged everyone.'
+    Receiver:
+      # What format this message should be replaced to. Supports advanced component.
+      # If define like this, it equals with
+      #Replacement:
+      #  Type: Legacy
+      #  Message: '&b<$Message>&r'
+      Replacement: '&b<$Message>'
+      # The permission required.
+      Permission: 'RsAtPlayer.At.All.Receive'
+      # The sound to play for the player.
+      Sound:
+        # Advanced options.
+        # Using Namespace-Key allows you to define a custom sound from resource pack.
+        # These options are equals with `Type: ENTITY_PLAYER_LEVELUP`
+        Namespace: minecraft
+        Key: entity.player.levelup
+        # The sound source.
+        # List: MASTER, MUSIC, RECORD, WEATHER, BLOCK, HOSTILE, NEUTRAL, PLAYER, AMBIENT, VOICE.
+        Source: MASTER
+        Volume: 1.0
+        Pitch: 1.0
+      # The ActionBar message to send.
+      ActionBar:
+        # An example of advanced component.
+        # For docs of MiniMessage, check https://docs.advntr.dev/minimessage/format.html
+        Type: MiniMessage
+        Message: '<Gold><Bold><$Sender><Bold> just pinged everyone!'
+      # The title to send.
+      Title:
+        # The text of the title.
+        Title:
+          Type: Json
+          Message: '{"text":"",extra:[{"text":"<$Sender>","color":"gold","bold":true},{"text":" just pinged everyone!","color":"gold"}]}'
+        # The text of the subtitle.
+        # If define like this, it equals with
+        #SubTitle:
+        #  Type: Legacy
+        #  Message: '&6&l<$Sender>&6 just pinged everyone!'
+        SubTitle: '&6&l<$Sender>&6 just pinged everyone!'
+        # Time options.
+        Fade-In: 5
+        Stay: 45
+        Fade-Out: 10
+      # The chat message to send.
+      Chat:
+        # Text is the simplest type. If you need colors converted, use Legacy instead of it.
+        Type: Text
+        Message: '§6§l<$Sender>§6 just pinged everyone!'
+      # The boss bar to show.
+      Boss-Bar: '§6§l<$Sender>§6 just pinged everyone!'
+  Ping:
+    Sender:
+      Replacement:
+        Type: MiniMessage
+        Message: |-
+          <hover:show_text:'You just pinged <$Target>!'><gold><$Message>
+      Permission: 'RsAtPlayer.At.Ping.Send'
+      Sound: ENTITY_PLAYER_LEVELUP
+    Receiver:
+      Permission: 'RsAtPlayer.At.Ping.Receive'
+      Replacement:
+        Type: MiniMessage
+        Message: |-
+          <hover:show_text:'<$Sender> just pinged you!'><gold><bold><$Message>
+      Title:
+        SubTitle: '&6<$Sender> just pinged you!'
+        Fade-In: 5
+        Stay: 45
+        Fade-Out: 10
+      Sound: ENTITY_PLAYER_LEVELUP
+  Mention:
+    Sender:
+      Replacement: '&b<$Message>'
+      Permission: 'RsAtPlayer.At.Mention.Send'
+      Sound: ENTITY_PLAYER_LEVELUP
+    Receiver:
+      Replacement: '&b<$Message>'
+      Permission: 'RsAtPlayer.At.Mention.Receive'
+      Sound: ENTITY_PLAYER_LEVELUP
+      ActionBar: null
+      Title:
+        SubTitle: '&b<$Sender> just mentioned you!'
+        Fade-In: 5
+        Stay: 45
+        Fade-Out: 10
+      Chat: null
+  At-Fallback:
+    Sender:
+      Replacement: '&7<$Message>'
+      Permission: null
+    Receiver:
+      Replacement: '&7<$Message>'
+      Permission: 'RsAtPlayer.At.Fallback.Receive'
