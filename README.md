@@ -1,4 +1,4 @@
-# ProtocolStringReplacer
+# RsAtPlayer
 
 Advanced, customizable @ plugin.
 
