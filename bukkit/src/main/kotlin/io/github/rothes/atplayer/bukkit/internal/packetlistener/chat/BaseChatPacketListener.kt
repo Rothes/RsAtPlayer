@@ -123,7 +123,7 @@ abstract class BaseChatPacketListener(
                 for (arg in msg.args()) {
                     edited.add(handleMsg(arg, sender, receiver, pingGroup, mentionGroup, customs))
                 }
-                return Component.translatable().args(edited).style(msg.style()).append(childrenEdited).build()
+                return Component.translatable().key(msg.key()).args(edited).style(msg.style()).append(childrenEdited).build()
             }
             else -> {
                 return msg.children(childrenEdited)

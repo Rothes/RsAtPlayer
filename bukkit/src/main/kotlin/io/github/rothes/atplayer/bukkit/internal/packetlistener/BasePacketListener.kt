@@ -6,13 +6,21 @@ import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.reflect.StructureModifier
 import io.github.rothes.atplayer.bukkit.RsAtPlayer
+import io.github.rothes.rslib.bukkit.util.VersionUtils
+import io.github.rothes.rslib.bukkit.util.version.VersionRange
 
 abstract class BasePacketListener(
     packetType: PacketType,
     priority: ListenerPriority = ListenerPriority.NORMAL,
 ): PacketAdapter(RsAtPlayer.plugin, priority, packetType) {
 
-    fun register() = ProtocolLibrary.getProtocolManager().addPacketListener(this)
+    init {
+        register()
+    }
+
+    private fun register() {
+        ProtocolLibrary.getProtocolManager().addPacketListener(this)
+    }
 
 
     operator fun <T> StructureModifier<T>.get(fieldIndex: Int): T = read(fieldIndex)

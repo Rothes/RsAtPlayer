@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.utility.MinecraftReflection
 import io.github.rothes.atplayer.bukkit.RsAtPlayer
+import io.github.rothes.rslib.bukkit.util.version.VersionRange
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.lang.reflect.Field
@@ -14,7 +15,8 @@ class PlayerChatPost19 : BasePlayerChatPost19() {
     private val senderField: Field = PacketType.Play.Server.CHAT.packetClass.declaredFields.first {
         it.type.declaringClass == MinecraftReflection.getMinecraftClass("network.chat.ChatSender")
     }.apply { isAccessible = true }
-    private val uuid: Field = senderField.type.declaredFields.first { it.type == UUID::class.java }.apply { isAccessible = true }
+    private val uuid: Field =
+        senderField.type.declaredFields.first { it.type == UUID::class.java }.apply { isAccessible = true }
 
     override fun handleComponent(event: PacketEvent) {
         event.packet.chatComponents[0] = handleComponent(event, event.packet.chatComponents[0])

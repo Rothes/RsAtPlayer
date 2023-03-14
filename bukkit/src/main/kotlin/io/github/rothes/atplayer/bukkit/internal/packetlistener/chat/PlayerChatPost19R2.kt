@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.utility.MinecraftReflection
 import io.github.rothes.atplayer.bukkit.RsAtPlayer
+import io.github.rothes.rslib.bukkit.util.version.VersionRange
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.lang.reflect.Field
@@ -11,9 +12,11 @@ import java.util.*
 
 class PlayerChatPost19R2 : BasePlayerChatPost19() {
 
-    private val type: Field = PacketType.Play.Server.CHAT.packetClass.declaredFields.first {
-        it.type.declaringClass == MinecraftReflection.getMinecraftClass("network.chat.ChatMessageType")
-    }.apply { isAccessible = true }
+    private val type: Field by lazy {
+        PacketType.Play.Server.CHAT.packetClass.declaredFields.first {
+            it.type.declaringClass == MinecraftReflection.getMinecraftClass("network.chat.ChatMessageType")
+        }.apply { isAccessible = true }
+    }
     private val typeId: Field =
         type.type.declaredFields.first { it.type == Int::class.java }.apply { isAccessible = true }
 

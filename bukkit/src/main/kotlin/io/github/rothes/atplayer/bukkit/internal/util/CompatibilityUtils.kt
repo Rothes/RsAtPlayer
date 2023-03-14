@@ -11,6 +11,19 @@ object CompatibilityUtils {
 
     private val hasVia by lazy { Bukkit.getPluginManager().getPlugin("ViaVersion") != null }
 
+    val isSpigot = try {
+        Class.forName("org.bukkit.entity.Player\$Spigot")
+        true
+    } catch (throwable: Throwable) {
+        false;
+    }
+    val hasPaperComponent = try {
+        Class.forName("io.papermc.paper.text.PaperComponents")
+        true
+    } catch (throwable: Throwable) {
+        false;
+    }
+
     fun supportCustomCompletions(player: Player): Boolean {
         return ((VersionUtils.serverMajorVersion == 19.toByte() && VersionUtils.serverMinorVersion >= 1)
                 || VersionUtils.serverMinorVersion >= 20)

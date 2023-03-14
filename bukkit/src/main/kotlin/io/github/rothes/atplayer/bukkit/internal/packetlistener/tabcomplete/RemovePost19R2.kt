@@ -6,6 +6,7 @@ import io.github.rothes.atplayer.bukkit.config.RsAtPlayerConfigManager
 import io.github.rothes.atplayer.bukkit.internal.APCache
 import io.github.rothes.atplayer.bukkit.internal.util.CompatibilityUtils
 import io.github.rothes.atplayer.bukkit.user.UserManager
+import io.github.rothes.rslib.bukkit.util.version.VersionRange
 import org.bukkit.Bukkit
 import java.util.*
 

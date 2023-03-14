@@ -13,6 +13,7 @@ import io.github.rothes.atplayer.bukkit.internal.util.CompatibilityUtils
 import io.github.rothes.atplayer.bukkit.user.UserManager
 import io.github.rothes.rslib.bukkit.config.ComponentType
 import io.github.rothes.rslib.bukkit.extensions.MessageType
+import io.github.rothes.rslib.bukkit.util.version.VersionRange
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.Bukkit

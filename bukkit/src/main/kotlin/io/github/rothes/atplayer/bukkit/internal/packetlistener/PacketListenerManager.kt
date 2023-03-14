@@ -1,38 +1,41 @@
 package io.github.rothes.atplayer.bukkit.internal.packetlistener
 
 import com.comphenix.protocol.ProtocolLibrary
+import io.github.rothes.atplayer.bukkit.internal.packetlistener.chat.Chat
 import io.github.rothes.atplayer.bukkit.internal.packetlistener.chat.PlayerChatPost19
 import io.github.rothes.atplayer.bukkit.internal.packetlistener.chat.PlayerChatPost19R1
 import io.github.rothes.atplayer.bukkit.internal.packetlistener.chat.PlayerChatPost19R2
+import io.github.rothes.atplayer.bukkit.internal.packetlistener.chat.SystemChat
 import io.github.rothes.atplayer.bukkit.internal.packetlistener.tabcomplete.RemovePost19R2
 import io.github.rothes.atplayer.bukkit.internal.packetlistener.tabcomplete.Update
 import io.github.rothes.atplayer.bukkit.internal.packetlistener.tabcomplete.UpdatePost19R2
 import io.github.rothes.atplayer.bukkit.internal.plugin
-import io.github.rothes.rslib.bukkit.util.VersionUtils.serverMajorVersion
-import io.github.rothes.rslib.bukkit.util.VersionUtils.serverMinorVersion
+import io.github.rothes.rslib.bukkit.util.VersionUtils
+import io.github.rothes.rslib.bukkit.util.version.VersionRange
 
 object PacketListenerManager {
 
     fun register() {
-        if (serverMajorVersion == 19.toByte() && serverMinorVersion >= 3
-            || serverMajorVersion >= 20) {
-            PlayerChatPost19R2().register()
-        } else if (serverMajorVersion == 19.toByte() && serverMinorVersion >= 1){
-            PlayerChatPost19R1().register()
-        } else if (serverMajorVersion == 19.toByte()){
-            PlayerChatPost19().register()
-        }
+        regListener(VersionRange("1.19.3", "2"     )) { PlayerChatPost19R2() }
+        regListener(VersionRange("1.19.1", "1.19.2")) { PlayerChatPost19R1() }
+        regListener(VersionRange("1.19"  , "1.19"  )) { PlayerChatPost19() }
 
-        if (serverMajorVersion == 19.toByte() && serverMinorVersion >= 3
-            || serverMajorVersion >= 20) {
-            UpdatePost19R2().register()
-            RemovePost19R2().register()
-        } else {
-            Update().register()
-        }
+        regListener(VersionRange("1.19"  , "2"     )) { SystemChat() }
+        regListener(VersionRange("1.8"   , "1.18.2")) { Chat() }
+
+
+        regListener(VersionRange("1.19.2", "2"     )) { UpdatePost19R2() }
+        regListener(VersionRange("1.19.2", "2"     )) { RemovePost19R2() }
+        regListener(VersionRange("1.8"   , "1.19.1")) { Update() }
     }
 
     fun unregister() {
         ProtocolLibrary.getProtocolManager().removePacketListeners(plugin)
     }
+
+    private fun regListener(range: VersionRange, action: () -> Unit) {
+        if (range.matches(VersionUtils.serverVersion))
+            action.invoke()
+    }
+
 }
