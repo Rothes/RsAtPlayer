@@ -30,11 +30,16 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 
     compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
-    implementation("io.github.rothes.rslib:bukkit:0.2.0-SNAPSHOT")
+//    implementation("io.github.rothes.rslib:bukkit:0.2.0-SNAPSHOT") // Local Maven repo
+    implementation("com.github.Rothes.RsLib:bukkit:master-SNAPSHOT") // JitPack
 
     compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.1")
     compileOnly("com.viaversion:viaversion-api:4.5.1")
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
 }
 
 tasks.shadowJar {
