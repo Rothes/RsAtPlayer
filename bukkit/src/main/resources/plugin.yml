@@ -5,7 +5,7 @@ authors: [Rothes]
 version: ${versionString}
 version-channel: ${versionChannel}
 version-number: ${versionNumber}
-api-version: 1.19
+api-version: 1.13
 depend:
   - ProtocolLib
 soft-depend:
