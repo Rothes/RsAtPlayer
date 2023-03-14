@@ -12,7 +12,6 @@ import io.github.rothes.rslib.bukkit.util.VersionUtils
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import sun.audio.AudioPlayer.player
 import java.lang.UnsupportedOperationException
 import java.util.*
 
