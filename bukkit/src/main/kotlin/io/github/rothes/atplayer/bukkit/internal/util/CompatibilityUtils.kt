@@ -27,7 +27,7 @@ object CompatibilityUtils {
     fun supportCustomCompletions(player: Player): Boolean {
         return ((VersionUtils.serverMajorVersion == 19.toByte() && VersionUtils.serverMinorVersion >= 1)
                 || VersionUtils.serverMinorVersion >= 20)
-                && (!hasVia || Via.getAPI().getPlayerVersion(player) >= 761)
+                && (!hasVia || Via.getAPI().getPlayerVersion(player) >= 760)
     }
 
     fun supportTabHide(player: Player): Boolean {

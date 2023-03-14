@@ -2,7 +2,6 @@ package io.github.rothes.atplayer.bukkit.internal.packetlistener.chat
 
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.PacketEvent
-import io.github.rothes.atplayer.bukkit.RsAtPlayer
 import io.github.rothes.atplayer.bukkit.internal.util.ServerComponentConverter
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
@@ -17,7 +16,6 @@ class SystemChat : BaseSystemChatPacketListener(PacketType.Play.Server.SYSTEM_CH
         } ?: run {
             val modifier = event.packet.modifier
             val original = ServerComponentConverter.getPaperComponent(modifier)!!
-            RsAtPlayer.plugin.warn("papercomp")
             ServerComponentConverter.setPaperComponent(modifier, handleAtTypes(searchSender(original).player, event.receiver, original))
         }
     }
