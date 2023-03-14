@@ -27,4 +27,4 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: RsAtPlayer-Bukkit-All
-          path: bukkit/build/libs/RsAtPlayer-Bukkit-[\s\S]+.jar
+          path: bukkit/build/libs/*.jar
