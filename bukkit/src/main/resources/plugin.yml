@@ -8,4 +8,5 @@ version-number: ${versionNumber}
 api-version: 1.19
 depend:
   - ProtocolLib
+soft-depend:
   - ViaVersion
