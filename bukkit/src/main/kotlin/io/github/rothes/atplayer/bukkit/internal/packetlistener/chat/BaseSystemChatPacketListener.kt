@@ -20,17 +20,26 @@ abstract class BaseSystemChatPacketListener(
         when (msg) {
             is TextComponent         -> {
                 if (bracket) {
-                    for (player in Bukkit.getOnlinePlayers()) {
-                        if (msg.content() == player.name || msg.content() == player.displayName) {
-                            return SearchResult(player, true)
-                        }
-                    }
+                    matchPlayer(msg.content())?.let { return SearchResult(it, true) }
                 } else {
+                    var matching = false
+                    var builder: StringBuilder? = null
                     for (c in msg.content()) {
-                        if (c == '<')
+                        if (c == '<') {
                             bracket = true
-                        else if (c == '>')
+
+                            matching = true
+                            builder = StringBuilder()
+                        } else if (c == '>') {
                             bracket = false
+
+                            if (matching) {
+                                matchPlayer(builder.toString())?.let { return SearchResult(it, true) }
+                                matching = false
+                            }
+                        } else if (matching) {
+                            builder!!.append(c)
+                        }
                     }
                 }
             }
@@ -51,6 +60,15 @@ abstract class BaseSystemChatPacketListener(
             }
         }
         return SearchResult(null, bracket)
+    }
+
+    private fun matchPlayer(string: String): Player? {
+        for (player in Bukkit.getOnlinePlayers()) {
+            if (string == player.name || string == player.displayName) {
+                return player
+            }
+        }
+        return null
     }
 
     class SearchResult(val player: Player?, val inBracket: Boolean)
