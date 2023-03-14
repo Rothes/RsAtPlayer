@@ -34,7 +34,7 @@ object CompatibilityUtils {
         return Via.getAPI().getPlayerVersion(player) >= 761
     }
 
-    fun parsePapi(player: OfflinePlayer, string: String): String {
+    fun parsePapi(player: OfflinePlayer?, string: String): String {
         return PlaceholderAPI.setPlaceholders(player, string)
     }
 

@@ -12,6 +12,7 @@ import io.github.rothes.rslib.bukkit.util.VersionUtils
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import sun.audio.AudioPlayer.player
 import java.lang.UnsupportedOperationException
 import java.util.*
 
@@ -60,7 +61,7 @@ abstract class BaseTabCompletePacketListener(
 
     protected fun createInfo(string: String, component: ComponentType): PlayerInfoData {
         return generateInfo(APCache.getFakeUuid(string), string, component.type.getComponent(
-            component.message.replace("<\$Name>", string)
+            CompatibilityUtils.parsePapi(null, component.message.replace("<\$Name>", string))
         ))
     }
 

@@ -50,7 +50,6 @@ Recommend-Groups:
   Custom-All:
     Add-Recommends-In-Chat: true
     Add-Recommends-Legacy: false
-    # PlaceholderAPI not supported for custom formats.
     Fake-Player-Tab-Name: '~RsAtPlayer Format <$Name>'
   Custom-All-Not-Add:
     Add-Recommends-In-Chat: false
