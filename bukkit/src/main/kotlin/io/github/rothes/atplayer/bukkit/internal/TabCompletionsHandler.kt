@@ -28,7 +28,7 @@ object TabCompletionsHandler {
     @Suppress("UNCHECKED_CAST") private val addEnum by lazy { (PacketType.Play.Server.CUSTOM_CHAT_COMPLETIONS.packetClass.declaredFields[0].type.enumConstants as Array<Enum<*>>).first { it.name == "ADD" } }
     @Suppress("UNCHECKED_CAST") private val removeEnum by lazy { (PacketType.Play.Server.CUSTOM_CHAT_COMPLETIONS.packetClass.declaredFields[0].type.enumConstants as Array<Enum<*>>).first { it.name == "REMOVE" } }
 
-    @Suppress("UNCHECKED_CAST") private val updateEnums by lazy { EnumSet.allOf(PacketType.Play.Server.PLAYER_INFO.packetClass.declaredClasses[0] as Class<out Enum<*>>) }
+    @Suppress("UNCHECKED_CAST") private val updateEnums by lazy { EnumSet.allOf(PacketType.Play.Server.PLAYER_INFO.packetClass.declaredClasses.first { it.isEnum } as Class<out Enum<*>>) }
 
     fun addCustomRecommends(player: Player) = addCustomRecommends(UserManager[player])
     fun addCustomRecommends(user: User) {
@@ -112,6 +112,7 @@ object TabCompletionsHandler {
                     )
                 }
             }
+            ProtocolLibrary.getProtocolManager().sendServerPacket(user.player, packet)
         } else {
             val packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.PLAYER_INFO)
             packet.playerInfoAction[0] = EnumWrappers.PlayerInfoAction.ADD_PLAYER
@@ -125,6 +126,7 @@ object TabCompletionsHandler {
                     ))
                 }
             }
+            ProtocolLibrary.getProtocolManager().sendServerPacket(user.player, packet)
         }
     }
 
@@ -140,6 +142,7 @@ object TabCompletionsHandler {
             }
         } else {
             val packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.PLAYER_INFO)
+            @Suppress("DEPRECATION")
             packet.playerInfoAction[0] = EnumWrappers.PlayerInfoAction.REMOVE_PLAYER
             packet.playerInfoDataLists[0] = mutableListOf<PlayerInfoData>().apply {
                 for (format in list) {
