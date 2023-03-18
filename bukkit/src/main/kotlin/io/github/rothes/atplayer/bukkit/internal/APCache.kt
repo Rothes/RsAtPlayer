@@ -16,11 +16,13 @@ object APCache {
 
     fun load() {
         playerRelative.clear()
+        stringCache.clear()
 
         RsAtPlayerConfigManager.data.atTypes.filterIsInstance<PlayerRelativeAtType>().forEach { type ->
             playerRelative[type] = Bukkit.getOnlinePlayers().stream().map { type.format.replacep("PlayerName", it.name) } .collect(Collectors.toSet())
         }
     }
+
     fun getFakeUuid(string: String): UUID {
         return stringCache[string] ?: run {
             var randomUUID = UUID.randomUUID()
