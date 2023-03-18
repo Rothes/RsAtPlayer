@@ -1,26 +1,23 @@
 package io.github.rothes.atplayer.bukkit.internal
 
+import io.github.rothes.atplayer.bukkit.config.PlayerRelativeAtType
+import io.github.rothes.atplayer.bukkit.config.RsAtPlayerConfigManager
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Collectors
+import kotlin.collections.HashMap
 
 object APCache {
 
-    val pingNames: MutableSet<String> = Bukkit.getOnlinePlayers().stream().map { "@" + it.name } .collect(Collectors.toSet())
-    val mentionNames: MutableSet<String> = Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toSet())
-
-    private val uuidCache = ConcurrentHashMap<UUID, UUID>()
+    val playerRelative = HashMap<PlayerRelativeAtType, MutableSet<String>>()
     private val stringCache = ConcurrentHashMap<String, UUID>()
 
-    fun getFakeUuid(real: UUID): UUID {
-        return uuidCache[real] ?: run {
-            var randomUUID = UUID.randomUUID()
-            while (Bukkit.getOfflinePlayer(randomUUID).hasPlayedBefore()) {
-                randomUUID = UUID.randomUUID()
-            }
-            return randomUUID.also { uuidCache[real] = it }
+    fun load() {
+        playerRelative.clear()
+
+        RsAtPlayerConfigManager.data.atTypes.filterIsInstance<PlayerRelativeAtType>().forEach { type ->
+            playerRelative[type] = Bukkit.getOnlinePlayers().stream().map { type.format.replace("<\$PlayerName>", it.name) } .collect(Collectors.toSet())
         }
     }
     fun getFakeUuid(string: String): UUID {
@@ -31,10 +28,6 @@ object APCache {
             }
             return randomUUID.also { stringCache[string] = it }
         }
-    }
-
-    fun getFakeUuidIfPresent(real: UUID): UUID? {
-        return uuidCache[real]
     }
 
 }

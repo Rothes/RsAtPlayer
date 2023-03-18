@@ -4,7 +4,9 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.utility.MinecraftReflection
 import io.github.rothes.atplayer.bukkit.RsAtPlayer
-import io.github.rothes.rslib.bukkit.util.version.VersionRange
+import io.github.rothes.atplayer.bukkit.extensions.get
+import io.github.rothes.atplayer.bukkit.extensions.set
+import io.github.rothes.atplayer.bukkit.extensions.typed
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.lang.reflect.Field

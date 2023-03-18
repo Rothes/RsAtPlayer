@@ -1,6 +1,8 @@
 package io.github.rothes.atplayer.bukkit
 
 import io.github.rothes.atplayer.bukkit.config.RsAtPlayerConfigManager
+import io.github.rothes.atplayer.bukkit.internal.APCache
+import io.github.rothes.atplayer.bukkit.internal.TabCompletionsHandler
 import io.github.rothes.atplayer.bukkit.internal.listeners.Listeners
 import io.github.rothes.atplayer.bukkit.internal.packetlistener.PacketListenerManager
 import io.github.rothes.rslib.bukkit.RsLibPlugin
@@ -21,6 +23,8 @@ class RsAtPlayer : RsLibPlugin() {
         super.onEnable()
         configManager.load()
         i18n.load()
+        APCache.load()
+        Bukkit.getOnlinePlayers().forEach(TabCompletionsHandler::addCustomCompletions)
 
         PacketListenerManager.register()
         Bukkit.getPluginManager().registerEvents(Listeners(), this)

@@ -1,5 +1,6 @@
 package io.github.rothes.atplayer.bukkit.config
 
+import io.github.rothes.atplayer.bukkit.internal.i18n
 import io.github.rothes.atplayer.bukkit.internal.plugin
 import io.github.rothes.rslib.bukkit.config.ComponentType
 import io.github.rothes.rslib.bukkit.config.ConfigManager
@@ -10,6 +11,7 @@ import io.github.rothes.rslib.bukkit.extensions.getTypedMessage
 import io.github.rothes.rslib.bukkit.extensions.getTypedMessageType
 import org.bukkit.entity.Player
 import org.simpleyaml.configuration.ConfigurationSection
+import java.util.*
 
 object RsAtPlayerConfigManager: ConfigManager(plugin) {
 
@@ -38,8 +40,6 @@ object RsAtPlayerConfigManager: ConfigManager(plugin) {
 
     class ConfigData: ConfigManager.ConfigData() {
         override val locale: String? = yamlFile.getString("Options.Locale")
-        val mentionEnabled = yamlFile.getBoolean("At-Types.Mention.Enabled", false)
-        val pingEnabled = yamlFile.getBoolean("At-Types.Ping.Enabled", false)
 
         val notifyGroups = hashMapOf<String, NotifyGroup>().apply {
             yamlFile.getConfigurationSection("Notify-Groups")?.let { groups ->
@@ -68,29 +68,34 @@ object RsAtPlayerConfigManager: ConfigManager(plugin) {
             }
         }
 
-        val mentionGroups = getNotifyGroups(yamlFile.getStringList("At-Types.Mention.Notify-Groups"))
-        val pingGroups = getNotifyGroups(yamlFile.getStringList("At-Types.Ping.Notify-Groups"))
+        val atTypes = buildList {
+            yamlFile.getConfigurationSection("At-Types")?.getKeys(false)!!.forEach { key ->
+                with(yamlFile.getConfigurationSection("At-Types.$key") ?: return@forEach) {
+                    val type = getString("Type")
+                    when (type.uppercase(Locale.ROOT)) {
+                        "PLAYER-RELATIVE" -> add(PlayerRelativeAtType(
+                            getString("Format"),
+                            getNotifyGroups("Notify-Groups"),
+                            recommendGroups[getString("Recommend-Group")] ?: RecommendGroup(),
+                        ))
+                        "CUSTOM" -> add(CustomAtType(
+                            getStringList("Formats").toTypedArray(),
+                            getNotifyGroups("Notify-Groups"),
+                            recommendGroups[getString("Recommend-Group")] ?: RecommendGroup(),
+                        ))
+                        else -> return@forEach plugin.warn(i18n.getLocaled("Console-Sender.Load.Config.Unknown-At-Type-Type",
+                            "Key", key, "Type", type))
+                    }
+                }
+            }
+        }.toTypedArray()
 
-        val pingRecommendGroup = recommendGroups[yamlFile.getString("At-Types.Ping.Recommend-Group")] ?: RecommendGroup()
-
-        val customTypes = mutableListOf<CustomAtType>().apply { yamlFile.getMapList("At-Types.Custom").forEach {
-            try {
-                @Suppress("UNCHECKED_CAST")
-                add(
-                    CustomAtType(
-                        (it["Formats"] as List<String>).toTypedArray(),
-                        getNotifyGroups(it["Notify-Groups"] as List<String>),
-                        recommendGroups[it["Recommend-Group"]] ?: RecommendGroup(false),
-                    )
-                )
-            } catch (t: Throwable) {
-                t.printStackTrace()
-            } } }
+        private fun ConfigurationSection.getNotifyGroups(key: String) = getNotifyGroups(getStringList(key))
 
         private fun getNotifyGroups(list: List<String>) = mutableListOf<NotifyGroup>().apply {
             for (name in list) {
                 notifyGroups[name]?.let(::add)
-                    ?: plugin.i18n.getLocaled("Console-Sender.Message.Initialize.Configuration.Unknown-Notify-Group", "<Name>", name)
+                    ?: plugin.i18n.getLocaled("Console-Sender.Message.Initialize.Configuration.Unknown-Notify-Group", "Name", name)
             }
         }.toTypedArray()
 

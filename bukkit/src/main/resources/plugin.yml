@@ -10,3 +10,4 @@ depend:
   - ProtocolLib
 soft-depend:
   - ViaVersion
+  - PlaceholderAPI

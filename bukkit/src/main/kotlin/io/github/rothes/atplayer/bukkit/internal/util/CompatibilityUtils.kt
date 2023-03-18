@@ -15,14 +15,16 @@ object CompatibilityUtils {
         Class.forName("org.bukkit.entity.Player\$Spigot")
         true
     } catch (throwable: Throwable) {
-        false;
+        false
     }
     val hasPaperComponent = try {
         Class.forName("io.papermc.paper.text.PaperComponents")
         true
     } catch (throwable: Throwable) {
-        false;
+        false
     }
+
+    val papi by lazy { Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null }
 
     fun supportCustomCompletions(player: Player): Boolean {
         return ((VersionUtils.serverMajorVersion == 19.toByte() && VersionUtils.serverMinorVersion >= 1)
@@ -35,7 +37,7 @@ object CompatibilityUtils {
     }
 
     fun parsePapi(player: OfflinePlayer?, string: String): String {
-        return PlaceholderAPI.setPlaceholders(player, string)
+        return if (papi) PlaceholderAPI.setPlaceholders(player, string) else string
     }
 
 }

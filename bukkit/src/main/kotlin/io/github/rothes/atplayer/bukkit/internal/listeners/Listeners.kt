@@ -1,6 +1,7 @@
 package io.github.rothes.atplayer.bukkit.internal.listeners
 
 import io.github.rothes.atplayer.bukkit.internal.APCache
+import io.github.rothes.atplayer.bukkit.internal.TabCompletionsHandler
 import io.github.rothes.atplayer.bukkit.user.UserManager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -19,15 +20,18 @@ class Listeners: Listener {
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
         UserManager.removeUser(event.player.uniqueId)
-        APCache.pingNames.add("@" + event.player.name)
-        APCache.mentionNames.add(event.player.name)
+        for ((type, set) in APCache.playerRelative) {
+            set.add(type.format.replace("<\$PlayerName>", event.player.name))
+        }
+        TabCompletionsHandler.addCustomCompletions(event.player)
     }
 
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
         UserManager.removeUser(event.player.uniqueId)
-        APCache.pingNames.remove("@" + event.player.name)
-        APCache.mentionNames.remove(event.player.name)
+        for ((type, set) in APCache.playerRelative) {
+            set.remove(type.format.replace("<\$PlayerName>", event.player.name))
+        }
     }
 
 }

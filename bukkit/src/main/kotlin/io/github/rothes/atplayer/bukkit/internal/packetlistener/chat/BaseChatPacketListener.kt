@@ -3,17 +3,16 @@ package io.github.rothes.atplayer.bukkit.internal.packetlistener.chat
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketEvent
-import io.github.rothes.atplayer.bukkit.config.CustomAtType
+import io.github.rothes.atplayer.bukkit.config.AtType
 import io.github.rothes.atplayer.bukkit.config.NotifyGroup
+import io.github.rothes.atplayer.bukkit.config.PlayerRelativeAtType
 import io.github.rothes.atplayer.bukkit.config.RsAtPlayerConfigManager
 import io.github.rothes.atplayer.bukkit.config.apply
-import io.github.rothes.atplayer.bukkit.internal.APCache
 import io.github.rothes.atplayer.bukkit.internal.packetlistener.BasePacketListener
 import io.github.rothes.rslib.bukkit.extensions.replaceRaw
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.TranslatableComponent
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 abstract class BaseChatPacketListener(
@@ -60,19 +59,23 @@ abstract class BaseChatPacketListener(
 //    }
 
     fun handleAtTypes(sender: Player?, receiver: Player, msg: Component): Component {
-        val pingGroup = if (!RsAtPlayerConfigManager.data.pingEnabled) null else
-            RsAtPlayerConfigManager.getMatchedNotifyGroup(sender, receiver, RsAtPlayerConfigManager.data.pingGroups)
-        val mentionGroup = if (!RsAtPlayerConfigManager.data.mentionEnabled) null else
-            RsAtPlayerConfigManager.getMatchedNotifyGroup(sender, receiver, RsAtPlayerConfigManager.data.mentionGroups)
-        val customs = RsAtPlayerConfigManager.data.customTypes
+        val types = RsAtPlayerConfigManager.data.atTypes.toMutableList()
 
-        return handleMsg(msg, sender, receiver, pingGroup, mentionGroup, customs)
+        val groups = mutableListOf<NotifyGroup>().apply {
+            with(types.iterator()) {
+                while (hasNext()) {
+                    RsAtPlayerConfigManager.getMatchedNotifyGroup(sender, receiver, next().notifyGroups)?.let(::add) ?: remove()
+                }
+            }
+        }
+
+        return handleMsg(msg, sender, receiver, types, groups)
     }
 
-    private fun handleMsg(msg: Component, sender: Player?, receiver: Player, pingGroup: NotifyGroup?, mentionGroup: NotifyGroup?, customs: List<CustomAtType>): Component {
+    private fun handleMsg(msg: Component, sender: Player?, receiver: Player, types: List<AtType>, groups: List<NotifyGroup>): Component {
         val childrenEdited = arrayListOf<Component>()
         for (children in msg.children()) {
-            childrenEdited.add(handleMsg(children, sender, receiver, pingGroup, mentionGroup, customs))
+            childrenEdited.add(handleMsg(children, sender, receiver, types, groups))
         }
         when (msg) {
             is TextComponent -> {
@@ -83,28 +86,19 @@ abstract class BaseChatPacketListener(
                 var target: Player? = null
                 for (part in msg.content().split(" ")) {
                     var toApply: NotifyGroup? = null
-                    if (pingGroup != null && part != "@${sender?.name}" // Ping self not allowed
-                        && (part == "@${receiver.name}" || (sender == receiver && APCache.pingNames.contains(part)))) {
-                        toApply = pingGroup
-                        target = if (sender == receiver) Bukkit.getPlayer(part.substring(1))!! else receiver
-                    } else if (mentionGroup != null && part != sender?.name // Mention self not allowed
-                        && (part == receiver.name || (sender == receiver && APCache.mentionNames.contains(part)))) {
-                        toApply = mentionGroup
-                        target = if (sender == receiver) Bukkit.getPlayer(part)!! else receiver
-                    } else run {
-                        for (custom in customs) {
-                            RsAtPlayerConfigManager.getMatchedNotifyGroup(sender, receiver, custom.notifyGroups)?.let {
-                                if (custom.formats.contains(part)) {
-                                    toApply = it
-                                    return@run
-                                }
+                    for ((index, type) in types.withIndex()) {
+                        if (type.matches(sender, receiver, part)) {
+                            toApply = groups[index]
+                            if (type is PlayerRelativeAtType) {
+                                target = if (sender == receiver) type.getTarget(part) else receiver
                             }
+                            break
                         }
                     }
 
                     if (toApply != null) {
-                        toApply!!.apply(sender, receiver)
-                        (if (sender == receiver) toApply!!.senderOptions.replacement else toApply!!.receiverOptions.replacement)?.let {
+                        toApply.apply(sender, receiver)
+                        (if (sender == receiver) toApply.senderOptions.replacement else toApply.receiverOptions.replacement)?.let {
                             builder.append(Component.text(msg.content().substring(left, right)).style(msg.style()))
                             builder.append(formatReplacement(sender, receiver, target, it, part))
                             left = right + part.length
@@ -121,7 +115,7 @@ abstract class BaseChatPacketListener(
             is TranslatableComponent -> {
                 val edited = arrayListOf<Component>()
                 for (arg in msg.args()) {
-                    edited.add(handleMsg(arg, sender, receiver, pingGroup, mentionGroup, customs))
+                    edited.add(handleMsg(arg, sender, receiver, types, groups))
                 }
                 return Component.translatable().key(msg.key()).args(edited).style(msg.style()).append(childrenEdited).build()
             }

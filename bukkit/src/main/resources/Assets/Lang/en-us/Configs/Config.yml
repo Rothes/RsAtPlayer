@@ -1,40 +1,42 @@
 At-Types:
-  # Built-in type. Never remove it.
-  # This is triggered when a player's full name is sent.
   Mention:
-    # Is this type enabled?
-    Enabled: false
+    # The type of this At.
+    # PLAYER-RELATIVE is for dynamic formats, based on each player's name.
+    Type: PLAYER-RELATIVE
+    # PLAYER-RELATIVE type only. <$PlayerName> will be replaced to the name of the player,
+    # and the player is the target.
+    # This is triggered when a player's name is sent.
+    Format: '<$PlayerName>'
     # The notify-groups. We will search for a matched group from head to end.
-    Notify-Groups:
-      - Mention
-  # Built-in type. Never remove it.
-  # This is triggered when @ with a player's full name is sent.
+    Notify-Groups: [Mention]
+    # Mention doesn't need custom recommend, so set it to null.
+    Recommend-Group: ~
   Ping:
-    Enabled: true
+    Type: PLAYER-RELATIVE
+    # This is triggered when a '@' followed by a player's name is sent.
+    Format: '@<$PlayerName>'
     # If the sender/receiver doesn't have the permission defined in `Ping` group,
-    # we use `At-Fallback` as fallback.
+    # we use `Ping-Fallback` as fallback.
     Notify-Groups:
       - Ping
-      - At-Fallback
+      - Ping-Fallback
     Recommend-Group: Ping
-  # You can add your custom at types here.
-  Custom:
-    - # Matched format list.
-      Formats:
-        - '@all'
-      Notify-Groups:
-        - All
-        - At-Fallback
-      Recommend-Group: Custom-All # This group add suggestion to tab-complete.
-    - # Matched format list.
-      Formats:
-        - '@All'
-        - '@everyone'
-        - '@here'
-      Notify-Groups:
-        - All
-        - At-Fallback
-      Recommend-Group: Custom-All-Not-Add # This group doesn't add, to avoid the messes.
+  All:
+    # CUSTOM type is for constant formats.
+    Type: CUSTOM
+    # CUSTOM type only.
+    Formats:
+      - '@all'
+    Notify-Groups: [All]
+    Recommend-Group: Custom-All # This group add suggestion to tab-complete.
+  All-Not-Add:
+    Type: CUSTOM
+    Formats:
+      - '@All'
+      - '@everyone'
+      - '@here'
+    Notify-Groups: [All]
+    Recommend-Group: Custom-All-Not-Add # This group doesn't add, to avoid the messes.
 
 Recommend-Groups:
   Ping:
@@ -163,7 +165,7 @@ Notify-Groups:
         Stay: 45
         Fade-Out: 10
       Chat: null
-  At-Fallback:
+  Ping-Fallback:
     Sender:
       Replacement: '&7<$Message>'
       Permission: null

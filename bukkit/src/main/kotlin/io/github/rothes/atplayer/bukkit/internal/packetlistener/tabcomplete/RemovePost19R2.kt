@@ -2,38 +2,41 @@ package io.github.rothes.atplayer.bukkit.internal.packetlistener.tabcomplete
 
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.PacketEvent
+import io.github.rothes.atplayer.bukkit.config.PlayerRelativeAtType
 import io.github.rothes.atplayer.bukkit.config.RsAtPlayerConfigManager
-import io.github.rothes.atplayer.bukkit.internal.APCache
+import io.github.rothes.atplayer.bukkit.extensions.get
+import io.github.rothes.atplayer.bukkit.extensions.set
+import io.github.rothes.atplayer.bukkit.internal.TabCompletionsHandler
 import io.github.rothes.atplayer.bukkit.internal.util.CompatibilityUtils
 import io.github.rothes.atplayer.bukkit.user.UserManager
-import io.github.rothes.rslib.bukkit.util.version.VersionRange
 import org.bukkit.Bukkit
 import java.util.*
 
 class RemovePost19R2 : BaseTabCompletePacketListener(PacketType.Play.Server.PLAYER_INFO_REMOVE) {
 
     override fun onPacketSending(event: PacketEvent) {
-        val uuids = event.packet.modifier.withType<List<UUID>>(List::class.java)[0]
-        if (CompatibilityUtils.supportCustomCompletions(event.player)) {
-            removeChatCompletions(event.player, mutableListOf<String>().apply {
-                for (uuid in uuids) {
-                    Bukkit.getOfflinePlayer(uuid).run {
-                        if (hasPlayedBefore())
-                            add("@${this.name}")
-                    }
-                }
+        val uuidsRaw = event.packet.modifier.withType<List<UUID>>(List::class.java)[0]
 
-                // Custom formats
-                val all = mutableListOf<String>().apply {
-                    RsAtPlayerConfigManager.data.customTypes.forEach {
-                        addAll(it.formats)
-                    }
+        val names = mutableListOf<String>().apply {
+            uuidsRaw.forEach {
+                Bukkit.getOfflinePlayer(it).run {
+                    if (hasPlayedBefore()) add(name!!)
                 }
-                val user = UserManager[event.player].addedCustomRecommends
-                for (recommend in user) {
-                    if (!all.contains(recommend)) {
-                        user.remove(recommend)
-                        add(recommend)
+            }
+        }
+
+        val user = UserManager[event.player]
+        if (CompatibilityUtils.supportCustomCompletions(event.player)) {
+            TabCompletionsHandler.removeChatCompletions(event.player, mutableListOf<String>().apply {
+                RsAtPlayerConfigManager.data.atTypes.forEach {
+                    if (!it.recommendGroup.addRecommend) return@forEach
+                    when (it) {
+                        is PlayerRelativeAtType -> {
+                            for (name in names) {
+                                val format = it.format.replace("<\$PlayerName>", name)
+                                user.removeRecommend(format)?.let { add(format) }
+                            }
+                        }
                     }
                 }
             })
@@ -41,25 +44,15 @@ class RemovePost19R2 : BaseTabCompletePacketListener(PacketType.Play.Server.PLAY
         }
 
         // Legacy method
-        val modifiedList = ArrayList(uuids)
-
-        for (uuid in uuids) {
-            APCache.getFakeUuidIfPresent(uuid)?.run {
-                modifiedList.add(this)
-            }
-        }
-
-        // Custom formats
-        val all = mutableListOf<String>().apply {
-            RsAtPlayerConfigManager.data.customTypes.forEach {
-                addAll(it.formats)
-            }
-        }
-        val user = UserManager[event.player].addedCustomRecommends
-        for (recommend in user) {
-            if (!all.contains(recommend)) {
-                user.remove(recommend)
-                modifiedList.add(APCache.getFakeUuid(recommend))
+        val modifiedList = ArrayList(uuidsRaw)
+        RsAtPlayerConfigManager.data.atTypes.forEach { atType ->
+            if (!(atType.recommendGroup.addRecommend && atType.recommendGroup.addForLegacy)) return@forEach
+            when (atType) {
+                is PlayerRelativeAtType ->
+                    for (name in names)
+                        user.removeRecommend(name)?.let {
+                            modifiedList.add(it as UUID)
+                        }
             }
         }
         event.packet.modifier.withType<List<UUID>>(List::class.java)[0] = modifiedList
