@@ -69,7 +69,7 @@ object TabCompletionsHandler {
                                 format,
                                 atType.recommendGroup.tabName.let {
                                     it.type.getComponent(
-                                        CompatibilityUtils.parsePapi(null, it.message.replacep("Name", atType.format))
+                                        CompatibilityUtils.parsePapi(player, it.message.replacep("Name", atType.format))
                                     )
                                 }))
                             user.addRecommend(format)
