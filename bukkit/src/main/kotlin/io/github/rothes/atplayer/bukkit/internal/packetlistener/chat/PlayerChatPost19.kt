@@ -24,7 +24,7 @@ class PlayerChatPost19 : BasePlayerChatPost19() {
     }
 
     override val PacketEvent.chatType
-        get() = when (packet.integers[0]) {
+        get() = when (packet.integers[0].toInt()) {
             0    -> ChatType.PLAYER_CHAT
             1    -> ChatType.SYSTEM_CHAT
             2    -> ChatType.GAME_INFO
