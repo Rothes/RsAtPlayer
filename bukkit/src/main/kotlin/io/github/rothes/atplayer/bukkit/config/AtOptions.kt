@@ -2,6 +2,7 @@ package io.github.rothes.atplayer.bukkit.config
 
 import io.github.rothes.atplayer.bukkit.internal.audience
 import io.github.rothes.atplayer.bukkit.internal.plugin
+import io.github.rothes.rslib.bukkit.extensions.placeholder
 import io.github.rothes.rslib.bukkit.extensions.replaceRaw
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.sound.Sound
@@ -52,8 +53,8 @@ fun AtOptions.apply(sender: Player?, receiver: Player, player: Player) {
 }
 
 private fun formatComponent(sender: Player?, receiver: Player, component: Component?) = component?.replaceRaw(
-    "<\$Sender>", sender?.name ?: "Unknown",
-    "<\$Receiver>", receiver.name
+    "Sender".placeholder, sender?.name ?: "Unknown",
+    "Receiver".placeholder, receiver.name
 )
 
 private fun formatTitle(sender: Player?, receiver: Player, title: Title?) = title?.let {

@@ -11,3 +11,7 @@ depend:
 soft-depend:
   - ViaVersion
   - PlaceholderAPI
+commands:
+  RsAtPlayer:
+    permission: op
+    aliases: [rsat, rsap]

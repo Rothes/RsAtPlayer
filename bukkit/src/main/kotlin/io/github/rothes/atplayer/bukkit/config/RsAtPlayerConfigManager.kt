@@ -9,6 +9,7 @@ import io.github.rothes.rslib.bukkit.extensions.getSound
 import io.github.rothes.rslib.bukkit.extensions.getTitle
 import io.github.rothes.rslib.bukkit.extensions.getTypedMessage
 import io.github.rothes.rslib.bukkit.extensions.getTypedMessageType
+import io.github.rothes.rslib.bukkit.extensions.placeholder
 import org.bukkit.entity.Player
 import org.simpleyaml.configuration.ConfigurationSection
 import java.util.*
@@ -61,7 +62,7 @@ object RsAtPlayerConfigManager: ConfigManager(plugin) {
                         this[key] = RecommendGroup(
                             it.getBoolean("Add-Recommends-In-Chat", true),
                             it.getBoolean("Add-Recommends-Legacy", false),
-                            it.getTypedMessageType("Fake-Player-Tab-Name") ?: ComponentType(MessageType.LEGACY, "~RsAtPlayer Fake <\$Name>"),
+                            it.getTypedMessageType("Fake-Player-Tab-Name") ?: ComponentType(MessageType.LEGACY, "~RsAtPlayer Fake ${"Name".placeholder}"),
                         )
                     }
                 }

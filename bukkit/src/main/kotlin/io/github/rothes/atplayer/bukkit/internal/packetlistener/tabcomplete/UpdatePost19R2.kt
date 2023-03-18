@@ -16,6 +16,7 @@ import io.github.rothes.atplayer.bukkit.internal.APCache
 import io.github.rothes.atplayer.bukkit.internal.TabCompletionsHandler
 import io.github.rothes.atplayer.bukkit.internal.util.CompatibilityUtils
 import io.github.rothes.atplayer.bukkit.user.UserManager
+import io.github.rothes.rslib.bukkit.extensions.replacep
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.Bukkit
@@ -42,18 +43,13 @@ class UpdatePost19R2 : BaseTabCompletePacketListener(PacketType.Play.Server.PLAY
 
         val user = UserManager[event.player]
         if (CompatibilityUtils.supportCustomCompletions(event.player)) {
-            TabCompletionsHandler.addChatCompletions(event.player, mutableListOf<String>().apply {
+            TabCompletionsHandler.addCompletions(user, mutableListOf<String>().apply {
                 RsAtPlayerConfigManager.data.atTypes.forEach {
                     if (!it.recommendGroup.addRecommend) return@forEach
                     when (it) {
                         is PlayerRelativeAtType -> {
-                            for (name in names) {
-                                val format = it.format.replace("<\$PlayerName>", name)
-                                if (!user.hasRecommend(format)) {
-                                    add(format)
-                                    user.addRecommend(format)
-                                }
-                            }
+                            for (name in names)
+                                add(it.format.replacep("PlayerName", name))
                         }
                     }
                 }
@@ -68,7 +64,7 @@ class UpdatePost19R2 : BaseTabCompletePacketListener(PacketType.Play.Server.PLAY
             when (atType) {
                 is PlayerRelativeAtType ->
                     for (name in names) {
-                        val format = atType.format.replace("<\$PlayerName>", name)
+                        val format = atType.format.replacep("PlayerName", name)
                         if (!user.hasRecommend(format)) {
                             user.addRecommend(format)
                             modifiedList.add(createInfo(format, atType.recommendGroup.tabName))

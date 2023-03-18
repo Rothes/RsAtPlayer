@@ -9,6 +9,7 @@ import io.github.rothes.atplayer.bukkit.extensions.set
 import io.github.rothes.atplayer.bukkit.internal.TabCompletionsHandler
 import io.github.rothes.atplayer.bukkit.internal.util.CompatibilityUtils
 import io.github.rothes.atplayer.bukkit.user.UserManager
+import io.github.rothes.rslib.bukkit.extensions.replacep
 import org.bukkit.Bukkit
 import java.util.*
 
@@ -27,15 +28,13 @@ class RemovePost19R2 : BaseTabCompletePacketListener(PacketType.Play.Server.PLAY
 
         val user = UserManager[event.player]
         if (CompatibilityUtils.supportCustomCompletions(event.player)) {
-            TabCompletionsHandler.removeChatCompletions(event.player, mutableListOf<String>().apply {
+            TabCompletionsHandler.removeCompletions(user, mutableListOf<String>().apply {
                 RsAtPlayerConfigManager.data.atTypes.forEach {
                     if (!it.recommendGroup.addRecommend) return@forEach
                     when (it) {
                         is PlayerRelativeAtType -> {
-                            for (name in names) {
-                                val format = it.format.replace("<\$PlayerName>", name)
-                                user.removeRecommend(format)?.let { add(format) }
-                            }
+                            for (name in names)
+                                add(it.format.replacep("PlayerName", name))
                         }
                     }
                 }

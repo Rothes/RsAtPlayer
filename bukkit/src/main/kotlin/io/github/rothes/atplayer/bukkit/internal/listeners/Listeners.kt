@@ -3,6 +3,7 @@ package io.github.rothes.atplayer.bukkit.internal.listeners
 import io.github.rothes.atplayer.bukkit.internal.APCache
 import io.github.rothes.atplayer.bukkit.internal.TabCompletionsHandler
 import io.github.rothes.atplayer.bukkit.user.UserManager
+import io.github.rothes.rslib.bukkit.extensions.replacep
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerChatEvent
@@ -21,16 +22,16 @@ class Listeners: Listener {
     fun onJoin(event: PlayerJoinEvent) {
         UserManager.removeUser(event.player.uniqueId)
         for ((type, set) in APCache.playerRelative) {
-            set.add(type.format.replace("<\$PlayerName>", event.player.name))
+            set.add(type.format.replacep("PlayerName", event.player.name))
         }
-        TabCompletionsHandler.addCustomCompletions(event.player)
+        TabCompletionsHandler.addCustomRecommends(event.player)
     }
 
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
         UserManager.removeUser(event.player.uniqueId)
         for ((type, set) in APCache.playerRelative) {
-            set.remove(type.format.replace("<\$PlayerName>", event.player.name))
+            set.remove(type.format.replacep("PlayerName", event.player.name))
         }
     }
 

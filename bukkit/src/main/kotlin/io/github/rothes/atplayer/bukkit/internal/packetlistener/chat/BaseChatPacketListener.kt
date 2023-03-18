@@ -9,6 +9,7 @@ import io.github.rothes.atplayer.bukkit.config.PlayerRelativeAtType
 import io.github.rothes.atplayer.bukkit.config.RsAtPlayerConfigManager
 import io.github.rothes.atplayer.bukkit.config.apply
 import io.github.rothes.atplayer.bukkit.internal.packetlistener.BasePacketListener
+import io.github.rothes.rslib.bukkit.extensions.placeholder
 import io.github.rothes.rslib.bukkit.extensions.replaceRaw
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -127,10 +128,10 @@ abstract class BaseChatPacketListener(
 
     private fun formatReplacement(sender: Player?, receiver: Player, target: Player?, component: Component, message: String): Component {
         return component.replaceRaw(
-            "<\$Message>", message,
-            "<\$Sender>", sender?.name ?: "Unknown",
-            "<\$Receiver>", receiver.name,
-            "<\$Target>", (target ?: receiver).name,
+            "Message".placeholder, message,
+            "Sender".placeholder, sender?.name ?: "Unknown",
+            "Receiver".placeholder, receiver.name,
+            "Target".placeholder, (target ?: receiver).name,
         )
     }
 

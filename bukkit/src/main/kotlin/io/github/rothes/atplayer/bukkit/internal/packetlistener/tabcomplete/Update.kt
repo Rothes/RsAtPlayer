@@ -13,6 +13,7 @@ import io.github.rothes.atplayer.bukkit.extensions.get
 import io.github.rothes.atplayer.bukkit.extensions.set
 import io.github.rothes.atplayer.bukkit.internal.APCache
 import io.github.rothes.atplayer.bukkit.user.UserManager
+import io.github.rothes.rslib.bukkit.extensions.replacep
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.Bukkit
@@ -42,7 +43,7 @@ class Update : BaseTabCompletePacketListener(PacketType.Play.Server.PLAYER_INFO)
             when (atType) {
                 is PlayerRelativeAtType ->
                     for (name in names) {
-                        val format = atType.format.replace("<\$PlayerName>", name)
+                        val format = atType.format.replacep("PlayerName", name)
                         if (!user.hasRecommend(format)) {
                             user.addRecommend(format)
                             modifiedList.add(createInfo(format, atType.recommendGroup.tabName))
@@ -58,7 +59,7 @@ class Update : BaseTabCompletePacketListener(PacketType.Play.Server.PLAYER_INFO)
             WrappedGameProfile(APCache.getFakeUuid(format), format),
             9999,
             EnumWrappers.NativeGameMode.SPECTATOR,
-            WrappedChatComponent.fromJson(GsonComponentSerializer.gson().serialize(component))
+            WrappedChatComponent.fromJson(GsonComponentSerializer.gson().serialize(component)),
         )
     }
 

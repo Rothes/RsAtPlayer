@@ -1,11 +1,13 @@
 package io.github.rothes.atplayer.bukkit.config
 
 import io.github.rothes.atplayer.bukkit.internal.APCache
+import io.github.rothes.rslib.bukkit.extensions.placeholder
+import io.github.rothes.rslib.bukkit.extensions.replacep
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 class PlayerRelativeAtType(
-    val format: String = "<\$PlayerName>",
+    val format: String = "PlayerName".placeholder,
     override val notifyGroups: Array<NotifyGroup> = arrayOf(),
     override val recommendGroup: RecommendGroup = RecommendGroup(false)
 ) : AtType {
@@ -13,14 +15,14 @@ class PlayerRelativeAtType(
     override fun matches(sender: Player?, receiver: Player, string: String, group: NotifyGroup?): Boolean {
         group ?: return false
 
-        return (sender == null || string != format.replace("<\$PlayerName>", sender.name)) // At self not allowed
-                && ((string == format.replace("<\$PlayerName>", receiver.name))
+        return (sender == null || string != format.replacep("PlayerName", sender.name)) // At self not allowed
+                && ((string == format.replacep("PlayerName", receiver.name))
                 || (sender == receiver && APCache.playerRelative[this]?.contains(string) ?: false))
     }
 
     fun getTarget(string: String): Player? {
-        val start = format.indexOf("<\$PlayerName>")
-        val end = format.substring(start + "<\$PlayerName>".length).length
+        val start = format.indexOf("PlayerName".placeholder)
+        val end = format.substring(start + "PlayerName".placeholder.length).length
         return Bukkit.getPlayer(string.substring(start, string.length - end))
     }
 
