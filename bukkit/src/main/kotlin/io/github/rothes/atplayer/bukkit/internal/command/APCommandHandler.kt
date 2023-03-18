@@ -8,13 +8,11 @@ import io.github.rothes.rslib.bukkit.command.ICommand
 class APCommandHandler : CommandHandler(pl, "RsAtPlayer") {
 
     init {
-        commands.add(Command("reload", { sender, _ ->
+        commands.add(Command("Reload", { sender, _ ->
             pl.reload()
             sender.sendMessage("reloaded")
             ICommand.Result.COMPLETED
         },
-            { _, _ -> emptyList() },
-            "Commands.Reload.Description",
             permission = "RsAtPlayer.Command.Reload"))
     }
 
