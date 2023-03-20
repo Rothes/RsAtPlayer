@@ -27,38 +27,6 @@ abstract class BaseChatPacketListener(
         process(event)
     }
 
-//    fun handleAtTypes(sender: Player?, receiver: Player, msg: String): String {
-//        TODO("Need to implement")
-//        val builder = StringBuilder()
-//        val atGroup = if (!RsAtPlayerConfigManager.data.pingEnabled) null else
-//            RsAtPlayerConfigManager.getMatchedNotifyGroup(sender, receiver, RsAtPlayerConfigManager.data.pingGroups)
-//        val mentionGroup = if (!RsAtPlayerConfigManager.data.mentionEnabled) null else
-//            RsAtPlayerConfigManager.getMatchedNotifyGroup(sender, receiver, RsAtPlayerConfigManager.data.mentionGroups)
-//        val customs = RsAtPlayerConfigManager.data.customTypes
-//
-//        msg.split(" ").forEach { part ->
-//            if (atGroup != null && part == "@${receiver.name}") {
-//                atGroup.apply(sender, receiver)
-//                builder.append(atGroup.receiverOptions.replacement ?: part)
-//                return@forEach
-//            }
-//            if (mentionGroup != null && part == receiver.name) {
-//                mentionGroup.apply(sender, receiver)
-//                builder.append(mentionGroup.receiverOptions.replacement ?: part)
-//                return@forEach
-//            }
-//            for (custom in customs) {
-//                RsAtPlayerConfigManager.getMatchedNotifyGroup(sender, receiver, custom.notifyGroups)?.let { group ->
-//                    if (custom.formats.contains(part)) {
-//                        group.apply(sender, receiver)
-//                        builder.append(group.receiverOptions.replacement)
-//                    }
-//                }
-//            }
-//        }
-//        return builder.toString()
-//    }
-
     fun handleAtTypes(sender: Player?, receiver: Player, msg: Component): Component {
         val types = RsAtPlayerConfigManager.data.atTypes.toMutableList()
 

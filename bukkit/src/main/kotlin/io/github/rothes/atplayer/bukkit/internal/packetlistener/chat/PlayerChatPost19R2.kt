@@ -22,11 +22,6 @@ class PlayerChatPost19R2 : BasePlayerChatPost19() {
     private val typeId: Field =
         type.type.declaredFields.first { it.type == Int::class.java }.apply { isAccessible = true }
 
-//    private val msgBody: Field = PacketType.Play.Server.CHAT.packetClass.declaredFields.first {
-//        it.type.declaringClass == MinecraftReflection.getMinecraftClass("network.chat.SignedMessageBody")
-//    }.apply { isAccessible = true }
-//    private val msg: Field = msgBody.type.declaredFields.first { it.type == String::class.java }.apply { isAccessible = true }
-
     override fun handleComponent(event: PacketEvent) {
         event.packet.chatComponents[0] = handleComponent(event, event.packet.chatComponents[0])
     }
