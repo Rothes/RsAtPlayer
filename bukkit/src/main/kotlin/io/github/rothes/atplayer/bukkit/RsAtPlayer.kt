@@ -14,6 +14,7 @@ import org.bukkit.Bukkit
 class RsAtPlayer : RsLibPlugin() {
 
     init {
+        nameLibLogger()
         plugin = this
     }
 
