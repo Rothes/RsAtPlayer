@@ -7,6 +7,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers
 import com.comphenix.protocol.wrappers.PlayerInfoData
 import com.comphenix.protocol.wrappers.WrappedChatComponent
 import com.comphenix.protocol.wrappers.WrappedGameProfile
+import com.comphenix.protocol.wrappers.WrappedRemoteChatSessionData
 import io.github.rothes.atplayer.bukkit.config.PlayerRelativeAtType
 import io.github.rothes.atplayer.bukkit.config.RsAtPlayerConfigManager
 import io.github.rothes.atplayer.bukkit.extensions.get
@@ -29,8 +30,10 @@ class UpdatePost19R2 : BaseTabCompletePacketListener(PacketType.Play.Server.PLAY
             // This is update player, not add player.
             return
         }
-        val infoList = event.packet.modifier.typed(List::class.java,
-            BukkitConverters.getListConverter(PlayerInfoData.getConverter()))[0]
+        val modifier = event.packet.modifier.typed(
+            List::class.java, BukkitConverters.getListConverter(PlayerInfoData.getConverter())
+        )
+        val infoList = modifier[0]
 
 
         val names = mutableListOf<String>().apply {
@@ -72,7 +75,7 @@ class UpdatePost19R2 : BaseTabCompletePacketListener(PacketType.Play.Server.PLAY
                     }
             }
         }
-        event.packet.modifier.typed(List::class.java)[0] = modifiedList
+        modifier[0] = modifiedList
 
     }
 
@@ -85,7 +88,7 @@ class UpdatePost19R2 : BaseTabCompletePacketListener(PacketType.Play.Server.PLAY
             EnumWrappers.NativeGameMode.SPECTATOR,
             WrappedGameProfile(fakeUuid, format),
             WrappedChatComponent.fromJson(GsonComponentSerializer.gson().serialize(component)),
-            null,
+            null as WrappedRemoteChatSessionData?,
         )
     }
 
